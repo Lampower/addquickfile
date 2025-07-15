@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "addquickfile.helloWorld",
-        "title": "Hello World"
+        "command": "addquickfile.addQuickFile",
+        "title": "Add File"
       }
     ]
   },
