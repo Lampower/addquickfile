@@ -19,6 +19,13 @@
       }
     ]
   },
+  "keybindings": [
+    {
+      "command": "addquickfile.addQuickFile",
+      "key": "shift+f2",
+      "when": "editorTextFocus"
+    }
+  ],
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
