@@ -93,7 +93,7 @@ async function createFile(context: vscode.ExtensionContext, selectedItem: vscode
 async function searchPaths(root: string, query: string): Promise<string[]> {
   const results = new Set<string>();
 
-  const searchWords = [".venv", "venv", "site-package", "node-modules"];
+  const searchWords = [".venv", "venv", "site-package", "node-modules", "node_modules"];
 
   async function walk(dir: string) {
     let files = await fs.promises.readdir(
