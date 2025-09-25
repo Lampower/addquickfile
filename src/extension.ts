@@ -24,9 +24,11 @@ export function activate(context: vscode.ExtensionContext) {
             input = value;
             const results = await searchPaths(rootPath, value);
             if (input === "") {
-              quickPick.items = [{"label": "/", "description": "Workspace folder"}];
+              quickPick.items = [{"label": "/", "description": "Workspace folder"}, ...results.map(r => ({ label: r }))];
             }
-            quickPick.items = [...quickPick.items, ...results.map(r => ({ label: r }))];
+            else {
+              quickPick.items = results.map(r => ({ label: r }));
+            }
         };
         
         updateItems("");
@@ -89,7 +91,7 @@ async function createFile(context: vscode.ExtensionContext, selectedItem: vscode
 }
 
 async function searchPaths(root: string, query: string): Promise<string[]> {
-  const results: string[] = [];
+  const results = new Set<string>();
 
   const searchWords = [".venv", "venv", "site-package", "node-modules"];
 
@@ -97,20 +99,19 @@ async function searchPaths(root: string, query: string): Promise<string[]> {
     let files = await fs.promises.readdir(
       dir,
       // check this shit
-      {"withFileTypes": false, "recursive": false}
+      {"withFileTypes": true, "recursive": false}
     );
     
-    let approvedFiles = [];
+    let approvedFiles = new Set<string>();
 
     for (const file of files) {
       let shouldAdd = true;
-      if (file.startsWith(".")) {
-        shouldAdd = false;
-      }
+      if (!file.isDirectory()) { shouldAdd = false; }
+      else if (file.name.startsWith(".")) { shouldAdd = false; }
       else {
         for (const word of searchWords) {
           if (
-            file.toLowerCase().includes(word)
+            file.name.toLowerCase().includes(word)
           ) {
             shouldAdd = false;
             break;
@@ -119,7 +120,7 @@ async function searchPaths(root: string, query: string): Promise<string[]> {
       }
       
       if (shouldAdd) {
-        approvedFiles.push(file);
+        approvedFiles.add(file.name);
       }
     }
 
@@ -130,7 +131,7 @@ async function searchPaths(root: string, query: string): Promise<string[]> {
 
       if (stat.isDirectory()) {
         if (relPath.toLowerCase().includes(query.toLowerCase())) {
-          results.push(relPath);
+          results.add(relPath);
         }
         await walk(fullPath);
       }
@@ -143,7 +144,7 @@ async function searchPaths(root: string, query: string): Promise<string[]> {
     console.error('Ошибка при обходе папок:', err);
   }
 
-  return results.slice(0, 50); // Ограничим кол-во результатов
+  return Array.from(results).slice(0, 50); // Ограничим кол-во результатов
 }
 
 export function deactivate() {}
