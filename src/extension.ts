@@ -23,7 +23,10 @@ export function activate(context: vscode.ExtensionContext) {
         const updateItems = async (value: string) => {
             input = value;
             const results = await searchPaths(rootPath, value);
-            quickPick.items = results.map(r => ({ label: r }));
+            if (input === "") {
+              quickPick.items = [{"label": "/", "description": "Workspace folder"}];
+            }
+            quickPick.items = [...quickPick.items, ...results.map(r => ({ label: r }))];
         };
         
         updateItems("");
@@ -64,7 +67,12 @@ async function createFile(context: vscode.ExtensionContext, selectedItem: vscode
   const targetPath = path.join(rootPath, selectedPath, newPath);
 
   if (isDirInput) {
-    await fs.promises.mkdir(targetPath, { recursive: true });
+    try {
+      await fs.promises.mkdir(targetPath, { recursive: true });
+    }
+    catch {
+
+    }
     return;
   }
 
@@ -96,14 +104,20 @@ async function searchPaths(root: string, query: string): Promise<string[]> {
 
     for (const file of files) {
       let shouldAdd = true;
-      for (const word of searchWords) {
-        if (
-          file.toLowerCase().includes(word) || file.startsWith(".")
-        ) {
-          shouldAdd = false;
-          break;
+      if (file.startsWith(".")) {
+        shouldAdd = false;
+      }
+      else {
+        for (const word of searchWords) {
+          if (
+            file.toLowerCase().includes(word)
+          ) {
+            shouldAdd = false;
+            break;
+          }
         }
       }
+      
       if (shouldAdd) {
         approvedFiles.push(file);
       }
