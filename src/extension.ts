@@ -97,7 +97,9 @@ async function searchPaths(root: string, query: string): Promise<string[]> {
     for (const file of files) {
       let shouldAdd = true;
       for (const word of searchWords) {
-        if (file.toLowerCase().includes(word)) {
+        if (
+          file.toLowerCase().includes(word) || file.startsWith(".")
+        ) {
           shouldAdd = false;
           break;
         }
