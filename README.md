@@ -6,6 +6,14 @@ VSC extension to add files quickly
 
 Used with default shortcut shift+f2
 
+## Hot to use
+
+```bash
+npm install -g @vscode/vsce
+vsce package
+code --install-extension addquickfile-0.0.1.vsix
+```
+
 ## Requirements
 
 

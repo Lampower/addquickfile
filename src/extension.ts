@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { fileSelector } from './fileSelector';
+import excludedWords from './excludedWords';
 
 export function activate(context: vscode.ExtensionContext) {
     const disposable = vscode.commands.registerCommand('addquickfile.addQuickFile', async () => {
@@ -80,10 +81,10 @@ async function createFile(context: vscode.ExtensionContext, selectedItem: vscode
 
   const pathSplitted = newPath.split(/[\\/]/).filter(Boolean);
   const filename = pathSplitted.at(-1) ?? "";
-  const preparedText = fileSelector(filename);
+  const preparedText = await fileSelector(filename);
 
   await fs.promises.mkdir(path.dirname(targetPath), { recursive: true });
-  await fs.promises.writeFile(targetPath, preparedText);
+  await fs.promises.writeFile(targetPath, preparedText ?? "");
 
   const uri = vscode.Uri.file(targetPath);
   const doc = await vscode.workspace.openTextDocument(uri);
@@ -93,7 +94,7 @@ async function createFile(context: vscode.ExtensionContext, selectedItem: vscode
 async function searchPaths(root: string, query: string): Promise<string[]> {
   const results = new Set<string>();
 
-  const searchWords = [".venv", "venv", "site-package", "node-modules", "node_modules"];
+  const searchWords = excludedWords;
 
   async function walk(dir: string) {
     let files = await fs.promises.readdir(
