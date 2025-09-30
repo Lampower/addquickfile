@@ -22,8 +22,7 @@
   "keybindings": [
     {
       "command": "addquickfile.addQuickFile",
-      "key": "shift+f2",
-      "when": "editorTextFocus"
+      "key": "shift+f2"
     }
   ],
   "scripts": {
