@@ -39,7 +39,10 @@ export function activate(context: vscode.ExtensionContext) {
         quickPick.onDidAccept(async () => {
             const selection = quickPick.selectedItems[0];
             if (selection) {
-                await createFile(context, selection);
+              await createFile(context, selection);
+            }
+            else {
+              await createFile(context, {"label": "/"})
             }
             quickPick.hide();
         });
