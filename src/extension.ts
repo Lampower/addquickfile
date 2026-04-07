@@ -12,8 +12,6 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        // context.sett
-
         const rootPath = workspaceFolders[0].uri.fsPath;
 
         let input = '';
@@ -42,7 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
               await createFile(context, selection);
             }
             else {
-              await createFile(context, {"label": "/"})
+              await createFile(context, {"label": "/"}, input)
             }
             quickPick.hide();
         });
@@ -54,11 +52,16 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-async function createFile(context: vscode.ExtensionContext, selectedItem: vscode.QuickPickItem) {
-  const inputBox = await vscode.window.showInputBox({ placeHolder: "" });
-  if (!inputBox) { return; }
-
-  let newPath = inputBox;
+async function createFile(context: vscode.ExtensionContext, selectedItem: vscode.QuickPickItem, value: string | null = null) {
+  let newPath: string
+  if (value) {
+    newPath = value
+  }
+  else {
+    const inputBox = await vscode.window.showInputBox({ placeHolder: "" });
+    if (!inputBox) { return; }
+    newPath = inputBox;
+  }
 
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders) {
